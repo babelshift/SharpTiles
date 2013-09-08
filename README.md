@@ -6,7 +6,7 @@ SharpTiles is a C# library used to load Tiled Map Editor's in a format used to r
 
 SharpTiles allows you to deserialize, process, and render maps created with the [Tiled Map Editor](http://www.mapeditor.org/). You are able to load tile layers, object layers, tileset textures, and tiles. The library supports reading maps that have been saved with gzip or zlib compression from within the Tiled Map Editor.
 
-**It is important to emphasize that SharpTiles utilizes SharpDL (which utilizes SDL2) there are native resources involved. Because SDL2 is a native C library, objects such as Textures, Surfaces, Renderers, and Windows will be maintained in native (non-managed) areas.**
+**It is important to emphasize that SharpTiles utilizes SharpDL (which utilizes SDL2). Because SDL2 is a native C library, objects such as Textures, Surfaces, Renderers, and Windows will be maintained in native (non-managed) areas.**
 
 ## Prerequisites
 
