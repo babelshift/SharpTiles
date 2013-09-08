@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SharpDL.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Xml;
 
 namespace SharpTiles
 {
-	public enum MapObjectType : byte
+	internal enum MapObjectType : byte
 	{
 		Plain,
 		Tile,
@@ -16,7 +17,7 @@ namespace SharpTiles
 		Polyline
 	}
 
-	public class MapObject
+	internal class MapObject
 	{
 		private PropertyCollection properties = new PropertyCollection();
 		private List<Point> points = new List<Point>();

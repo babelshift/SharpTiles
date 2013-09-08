@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SharpDL.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Xml;
 
 namespace SharpTiles
 {
-	public class MapObjectLayer : Layer
+	internal class MapObjectLayer : Layer
 	{
 		private List<MapObject> mapObjects = new List<MapObject>();
 
@@ -35,17 +36,22 @@ namespace SharpTiles
 
 			foreach (XmlNode objectNode in node.SelectNodes(AttributeNames.MapObjectLayerAttributes.Object))
 			{
-				string originalObjectName = objectNode.Attributes[AttributeNames.MapObjectAttributes.Name].Value;
-				string finalObjectName = originalObjectName;
-				int duplicateCount = 2;
-
-				while (mapObjects.Find(mo => mo.Name == finalObjectName) != null)
+				string originalObjectName = String.Empty;
+				if (objectNode.Attributes[AttributeNames.MapObjectAttributes.Name] != null)
 				{
-					finalObjectName = String.Format("{0}{1}", originalObjectName, duplicateCount);
-					duplicateCount++;
-				}
+					originalObjectName = objectNode.Attributes[AttributeNames.MapObjectAttributes.Name].Value;
 
-				objectNode.Attributes[AttributeNames.MapObjectAttributes.Name].Value = finalObjectName;
+					string finalObjectName = originalObjectName;
+					int duplicateCount = 2;
+
+					while (mapObjects.Find(mo => mo.Name == finalObjectName) != null)
+					{
+						finalObjectName = String.Format("{0}{1}", originalObjectName, duplicateCount);
+						duplicateCount++;
+					}
+
+					objectNode.Attributes[AttributeNames.MapObjectAttributes.Name].Value = finalObjectName;
+				}
 				MapObject mapObject = new MapObject(objectNode);
 				mapObjects.Add(mapObject);
 			}

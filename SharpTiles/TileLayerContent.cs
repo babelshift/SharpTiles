@@ -10,13 +10,13 @@ using System.Xml;
 
 namespace SharpTiles
 {
-	public class TileLayer : Layer
+	internal class TileLayerContent : Layer
 	{
 		private uint[] data;
 
 		public uint[] Data { get { return data; } }
 
-		public TileLayer(XmlNode node)
+		public TileLayerContent(XmlNode node)
 			: base(node)
 		{
 			XmlNode dataNode = node[AttributeNames.TileLayerAttributes.Data];

@@ -7,7 +7,7 @@ using System.Xml;
 
 namespace SharpTiles
 {
-	public class PropertyCollection : Dictionary<string, string>
+	internal class PropertyCollection : Dictionary<string, string>
 	{
 		public PropertyCollection() { }
 

@@ -10,7 +10,7 @@ using System.Xml;
 
 namespace SharpTiles
 {
-	public class TileSet : IDisposable
+	internal class TileSet : IDisposable
 	{
 		private Dictionary<int, PropertyCollection> tileProperties = new Dictionary<int, PropertyCollection>();
 
@@ -22,12 +22,14 @@ namespace SharpTiles
 		public int Spacing { get; private set; }
 		public int Margin { get; private set; }
 		public Color? ColorKey { get; private set; }
-		public IList<Tile> Tiles { get; private set; }
+		public IList<TileContent> Tiles { get; private set; }
 		public Texture Texture { get; set; }
 		public IReadOnlyDictionary<int, PropertyCollection> TileProperties { get { return tileProperties; } }
 
 		public TileSet(XmlNode node)
 		{
+			Tiles = new List<TileContent>();
+
 			int firstGID = 0;
 			int.TryParse(node.Attributes[AttributeNames.TileSetAttributes.FirstGID].Value, NumberStyles.None, CultureInfo.InvariantCulture, out firstGID);
 			FirstGID = firstGID;

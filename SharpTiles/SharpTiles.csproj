@@ -48,18 +48,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AttributeNames.cs" />
-    <Compile Include="Color.cs" />
     <Compile Include="ExternalTileSet.cs" />
     <Compile Include="Layer.cs" />
-    <Compile Include="Map.cs" />
+    <Compile Include="MapContent.cs" />
     <Compile Include="MapObject.cs" />
     <Compile Include="MapObjectLayer.cs" />
-    <Compile Include="Point.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyCollection.cs" />
-    <Compile Include="Rectangle.cs" />
-    <Compile Include="Tile.cs" />
-    <Compile Include="TileLayer.cs" />
+    <Compile Include="TileContent.cs" />
+    <Compile Include="TiledMap.cs" />
+    <Compile Include="TileLayerContent.cs" />
     <Compile Include="TileSet.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

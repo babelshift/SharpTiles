@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SharpTiles
 {
-	public static class AttributeNames
+	internal static class AttributeNames
 	{
 		public static class LayerAttributes
 		{
@@ -78,11 +78,15 @@ namespace SharpTiles
 			public static string Height = "height";
 			public static string TileWidth = "tilewidth";
 			public static string TileHeight = "tileheight";
-			public static string Properties = "map/properties";
-			public static string TileSet = "map/tileset";
-			public static string TileLayer = "map/layer";
-			public static string ObjectLayer = "map/objectgroup";
+			public static string Properties = "properties";
+			public static string TileSet = "tileset";
+			public static string TileLayer = "layer";
+			public static string ObjectLayer = "objectgroup";
 			public static string Source = "source";
+			public static string MapProperties = Map + "/" + Properties;
+			public static string MapTileSet = Map + "/" + TileSet;
+			public static string MapTileLayer = Map + "/" + TileLayer;
+			public static string MapObjectLayer = Map + "/" + ObjectLayer;
 		}
 	}
 }

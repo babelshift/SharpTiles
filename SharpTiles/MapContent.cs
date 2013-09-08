@@ -10,13 +10,13 @@ using System.Xml;
 
 namespace SharpTiles
 {
-	public enum Orientation : byte
+	internal enum Orientation : byte
 	{
 		Orthogonal,
 		Isometric
 	}
 
-	public class Map : IDisposable
+	internal class MapContent : IDisposable
 	{
 		private PropertyCollection properties = new PropertyCollection();
 		private List<TileSet> tileSets = new List<TileSet>();
@@ -34,7 +34,7 @@ namespace SharpTiles
 		public IEnumerable<TileSet> TileSets { get { return tileSets; } }
 		public IEnumerable<Layer> Layers { get { return layers; } }
 
-		public Map(string filePath, Renderer renderer, string contentRoot = "")
+		public MapContent(string filePath, Renderer renderer, string contentRoot = "")
 		{
 			XmlDocument document = new XmlDocument();
 			document.Load(filePath);
@@ -62,11 +62,11 @@ namespace SharpTiles
 			int.TryParse(mapNode.Attributes[AttributeNames.MapAttributes.TileHeight].Value, NumberStyles.None, CultureInfo.InvariantCulture, out tileHeight);
 			TileHeight = tileHeight;
 
-			XmlNode propertiesNode = document.SelectSingleNode(AttributeNames.MapAttributes.Properties);
+			XmlNode propertiesNode = document.SelectSingleNode(AttributeNames.MapAttributes.MapProperties);
 			if (propertiesNode != null)
 				properties = new PropertyCollection(propertiesNode);
 
-			foreach (XmlNode tileSetNode in document.SelectNodes(AttributeNames.MapAttributes.TileSet))
+			foreach (XmlNode tileSetNode in document.SelectNodes(AttributeNames.MapAttributes.MapTileSet))
 			{
 				if (tileSetNode.Attributes[AttributeNames.MapAttributes.Source] != null)
 					tileSets.Add(new ExternalTileSet(tileSetNode));
@@ -74,6 +74,37 @@ namespace SharpTiles
 					tileSets.Add(new TileSet(tileSetNode));
 			}
 
+			foreach(XmlNode layerNode in document.SelectNodes(AttributeNames.MapAttributes.MapTileLayer + "|" + AttributeNames.MapAttributes.MapObjectLayer))
+			{
+				Layer layer;
+				if (layerNode.Name == AttributeNames.MapAttributes.TileLayer)
+					layer = new TileLayerContent(layerNode);
+				else if (layerNode.Name == AttributeNames.MapAttributes.ObjectLayer)
+					layer = new MapObjectLayer(layerNode);
+				else
+					throw new Exception(String.Format("Unknown layer: {0}", layerNode.Name));
+
+				string layerName = layer.Name;
+				int duplicateCount = 2;
+
+				while (layers.Any(l => l.Name == layerName))
+				{
+					layerName = String.Format("{0}{1}", layer.Name, duplicateCount);
+					duplicateCount++;
+				}
+
+				layer.Name = layerName;
+
+				layers.Add(layer);
+			}
+
+			BuildTileSetTextures(renderer, contentRoot);
+
+			GenerateTileSourceRectangles(contentRoot);
+		}
+
+		private void BuildTileSetTextures(Renderer renderer, string contentRoot)
+		{
 			// build textures
 			foreach (TileSet tileSet in tileSets)
 			{
@@ -83,14 +114,17 @@ namespace SharpTiles
 				if (path.StartsWith(Directory.GetCurrentDirectory()))
 					assetPath = path.Remove(tileSet.ImageSource.LastIndexOf('.')).Substring(Directory.GetCurrentDirectory().Length + 1);
 				else
-					assetPath = Path.GetFileNameWithoutExtension(path);
+					assetPath = path;
 
 				// need to use colorkey
 
 				Surface surface = new Surface(assetPath, Surface.SurfaceType.PNG);
 				tileSet.Texture = new Texture(renderer, surface);
 			}
+		}
 
+		private void GenerateTileSourceRectangles(string contentRoot)
+		{
 			// process the tilesets, calculate tiles to fit in each set, calculate source rectangles
 			foreach (TileSet tileSet in tileSets)
 			{
@@ -129,7 +163,7 @@ namespace SharpTiles
 						if (tileSet.TileProperties.ContainsKey(index))
 							tileProperties = tileSet.TileProperties[index];
 
-						Tile tile = new Tile(source, tileProperties);
+						TileContent tile = new TileContent(source, tileProperties);
 						tileSet.Tiles.Add(tile);
 					}
 				}
@@ -142,7 +176,7 @@ namespace SharpTiles
 			GC.SuppressFinalize(this);
 		}
 
-		~Map()
+		~MapContent()
 		{
 			Dispose(false);
 		}

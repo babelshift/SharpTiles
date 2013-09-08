@@ -8,11 +8,11 @@ using System.Xml;
 
 namespace SharpTiles
 {
-	public abstract class Layer
+	internal abstract class Layer
 	{
 		private PropertyCollection properties = new PropertyCollection();
 
-		public string Name { get; private set; }
+		public string Name { get; set; }
 		public string Type { get; private set; }
 		public int Width { get; private set; }
 		public int Height { get; private set; }
