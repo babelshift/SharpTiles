@@ -19,8 +19,8 @@ namespace SharpTiles
 	internal class MapContent : IDisposable
 	{
 		private PropertyCollection properties = new PropertyCollection();
-		private List<TileSet> tileSets = new List<TileSet>();
-		private List<Layer> layers = new List<Layer>();
+		private List<TileSetContent> tileSets = new List<TileSetContent>();
+		private List<LayerContent> layers = new List<LayerContent>();
 
 		public string FileName { get; private set; }
 		public string FileDirectory { get; private set; }
@@ -31,8 +31,8 @@ namespace SharpTiles
 		public int TileWidth { get; private set; }
 		public int TileHeight { get; private set; }
 		public PropertyCollection Properties { get { return properties; } }
-		public IEnumerable<TileSet> TileSets { get { return tileSets; } }
-		public IEnumerable<Layer> Layers { get { return layers; } }
+		public IEnumerable<TileSetContent> TileSets { get { return tileSets; } }
+		public IEnumerable<LayerContent> Layers { get { return layers; } }
 
 		public MapContent(string filePath, Renderer renderer, string contentRoot = "")
 		{
@@ -42,45 +42,45 @@ namespace SharpTiles
 			XmlNode mapNode = document[AttributeNames.MapAttributes.Map];
 
 			Version = mapNode.Attributes[AttributeNames.MapAttributes.Version].Value;
-
-			Orientation = (Orientation)Enum.Parse(typeof(Orientation),
-				mapNode.Attributes[AttributeNames.MapAttributes.Orientation].Value, true);
-
-			int width = 0;
-			int.TryParse(mapNode.Attributes[AttributeNames.MapAttributes.Width].Value, NumberStyles.None, CultureInfo.InvariantCulture, out width);
-			Width = width;
-
-			int height = 0;
-			int.TryParse(mapNode.Attributes[AttributeNames.MapAttributes.Height].Value, NumberStyles.None, CultureInfo.InvariantCulture, out height);
-			Height = height;
-
-			int tileWidth = 0;
-			int.TryParse(mapNode.Attributes[AttributeNames.MapAttributes.TileWidth].Value, NumberStyles.None, CultureInfo.InvariantCulture, out tileWidth);
-			TileWidth = tileWidth;
-
-			int tileHeight = 0;
-			int.TryParse(mapNode.Attributes[AttributeNames.MapAttributes.TileHeight].Value, NumberStyles.None, CultureInfo.InvariantCulture, out tileHeight);
-			TileHeight = tileHeight;
+			Orientation = (Orientation)Enum.Parse(typeof(Orientation), mapNode.Attributes[AttributeNames.MapAttributes.Orientation].Value, true);
+			Width = Utilities.TryToParseInt(mapNode.Attributes[AttributeNames.MapAttributes.Width].Value);
+			Height = Utilities.TryToParseInt(mapNode.Attributes[AttributeNames.MapAttributes.Height].Value);
+			TileWidth = Utilities.TryToParseInt(mapNode.Attributes[AttributeNames.MapAttributes.TileWidth].Value);
+			TileHeight = Utilities.TryToParseInt(mapNode.Attributes[AttributeNames.MapAttributes.TileHeight].Value);
 
 			XmlNode propertiesNode = document.SelectSingleNode(AttributeNames.MapAttributes.MapProperties);
 			if (propertiesNode != null)
 				properties = new PropertyCollection(propertiesNode);
 
+			BuildTileSets(document);
+
+			BuildLayers(document);
+
+			BuildTileSetTextures(renderer, contentRoot);
+
+			GenerateTileSourceRectangles(contentRoot);
+		}
+
+		private void BuildTileSets(XmlDocument document)
+		{
 			foreach (XmlNode tileSetNode in document.SelectNodes(AttributeNames.MapAttributes.MapTileSet))
 			{
 				if (tileSetNode.Attributes[AttributeNames.MapAttributes.Source] != null)
-					tileSets.Add(new ExternalTileSet(tileSetNode));
+					tileSets.Add(new ExternalTileSetContent(tileSetNode));
 				else
-					tileSets.Add(new TileSet(tileSetNode));
+					tileSets.Add(new TileSetContent(tileSetNode));
 			}
+		}
 
-			foreach(XmlNode layerNode in document.SelectNodes(AttributeNames.MapAttributes.MapTileLayer + "|" + AttributeNames.MapAttributes.MapObjectLayer))
+		private void BuildLayers(XmlDocument document)
+		{
+			foreach (XmlNode layerNode in document.SelectNodes(AttributeNames.MapAttributes.MapTileLayer + "|" + AttributeNames.MapAttributes.MapObjectLayer))
 			{
-				Layer layer;
+				LayerContent layer;
 				if (layerNode.Name == AttributeNames.MapAttributes.TileLayer)
 					layer = new TileLayerContent(layerNode);
 				else if (layerNode.Name == AttributeNames.MapAttributes.ObjectLayer)
-					layer = new MapObjectLayer(layerNode);
+					layer = new ObjectLayerContent(layerNode);
 				else
 					throw new Exception(String.Format("Unknown layer: {0}", layerNode.Name));
 
@@ -97,16 +97,12 @@ namespace SharpTiles
 
 				layers.Add(layer);
 			}
-
-			BuildTileSetTextures(renderer, contentRoot);
-
-			GenerateTileSourceRectangles(contentRoot);
 		}
 
 		private void BuildTileSetTextures(Renderer renderer, string contentRoot)
 		{
 			// build textures
-			foreach (TileSet tileSet in tileSets)
+			foreach (TileSetContent tileSet in tileSets)
 			{
 				string path = Path.Combine(contentRoot, tileSet.ImageSource);
 
@@ -126,7 +122,7 @@ namespace SharpTiles
 		private void GenerateTileSourceRectangles(string contentRoot)
 		{
 			// process the tilesets, calculate tiles to fit in each set, calculate source rectangles
-			foreach (TileSet tileSet in tileSets)
+			foreach (TileSetContent tileSet in tileSets)
 			{
 				string path = Path.Combine(contentRoot, tileSet.ImageSource);
 
@@ -183,7 +179,7 @@ namespace SharpTiles
 
 		private void Dispose(bool isDisposing)
 		{
-			foreach (TileSet tileSet in tileSets)
+			foreach (TileSetContent tileSet in tileSets)
 				tileSet.Dispose();
 		}
 	}

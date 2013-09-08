@@ -11,12 +11,12 @@ namespace SharpTiles
 	{
 		private PropertyCollection properties = new PropertyCollection();
 
-		public Rectangle Source { get; private set; }
+		public Rectangle SourceTextureBounds { get; private set; }
 		public PropertyCollection Properties { get { return properties; } }
 
 		public TileContent(Rectangle source, PropertyCollection properties)
 		{
-			Source = source;
+			SourceTextureBounds = source;
 			this.properties = properties;
 		}
 	}

@@ -10,16 +10,16 @@ using System.Xml;
 
 namespace SharpTiles
 {
-	internal class TileLayerContent : Layer
+	internal class TileLayerContent : LayerContent
 	{
 		private uint[] data;
 
 		public uint[] Data { get { return data; } }
 
-		public TileLayerContent(XmlNode node)
-			: base(node)
+		public TileLayerContent(XmlNode tileLayerNode)
+			: base(tileLayerNode)
 		{
-			XmlNode dataNode = node[AttributeNames.TileLayerAttributes.Data];
+			XmlNode dataNode = tileLayerNode[AttributeNames.TileLayerAttributes.Data];
 			data = new uint[Width * Height];
 
 			if (dataNode.Attributes[AttributeNames.TileLayerAttributes.Encoding] != null)
@@ -27,9 +27,9 @@ namespace SharpTiles
 				string encoding = dataNode.Attributes[AttributeNames.TileLayerAttributes.Encoding].Value;
 
 				if (encoding == "base64")
-					ReadAsBase64(node, dataNode);
+					ReadAsBase64(tileLayerNode, dataNode);
 				else if (encoding == "csv")
-					ReadAsCSV(node);
+					ReadAsCSV(tileLayerNode);
 				else
 					throw new Exception(String.Format("Unsupported encoding type: {0}", encoding));
 			}

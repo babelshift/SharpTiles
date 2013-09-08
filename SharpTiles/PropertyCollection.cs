@@ -13,26 +13,26 @@ namespace SharpTiles
 
 		public PropertyCollection(XmlNode node)
 		{
-			foreach (XmlNode property in node.ChildNodes)
+			foreach (XmlNode propertyNode in node.ChildNodes)
 			{
-				string name = property.Attributes[AttributeNames.PropertyAttributes.Name].Value;
-				string value = property.Attributes[AttributeNames.PropertyAttributes.Value].Value;
+				string propertyName = propertyNode.Attributes[AttributeNames.PropertyAttributes.Name].Value;
+				string propertyValue = propertyNode.Attributes[AttributeNames.PropertyAttributes.Value].Value;
 
 				bool isDuplicateFound = false;
 
-				foreach (var p in this)
+				foreach (var property in this)
 				{
-					if (p.Key == name)
+					if (property.Key == propertyName)
 					{
-						if (p.Value == value)
+						if (property.Value == propertyValue)
 							isDuplicateFound = true;
 						else
-							throw new Exception(String.Format("Duplicate properties of name {0} found with values {1} and {2}", name, value, p.Value));
+							throw new Exception(String.Format("Duplicate properties of name {0} found with values {1} and {2}", propertyName, propertyValue, property.Value));
 					}
 				}
 
 				if (!isDuplicateFound)
-					Add(name, value);
+					Add(propertyName, propertyValue);
 			}
 		}
 	}
