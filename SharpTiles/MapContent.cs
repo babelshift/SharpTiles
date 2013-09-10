@@ -34,7 +34,7 @@ namespace SharpTiles
 		public IEnumerable<TileSetContent> TileSets { get { return tileSets; } }
 		public IEnumerable<LayerContent> Layers { get { return layers; } }
 
-		public MapContent(string filePath, Renderer renderer, string contentRoot = "")
+		public MapContent(string filePath, Renderer renderer, string contentRoot)
 		{
 			XmlDocument document = new XmlDocument();
 			document.Load(filePath);
@@ -106,15 +106,9 @@ namespace SharpTiles
 			{
 				string path = Path.Combine(contentRoot, tileSet.ImageSource);
 
-				string assetPath = String.Empty;
-				if (path.StartsWith(Directory.GetCurrentDirectory()))
-					assetPath = path.Remove(tileSet.ImageSource.LastIndexOf('.')).Substring(Directory.GetCurrentDirectory().Length + 1);
-				else
-					assetPath = path;
-
 				// need to use colorkey
 
-				Surface surface = new Surface(assetPath, Surface.SurfaceType.PNG);
+				Surface surface = new Surface(path, Surface.SurfaceType.PNG);
 				tileSet.Texture = new Texture(renderer, surface);
 			}
 		}

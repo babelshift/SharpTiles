@@ -52,8 +52,8 @@ namespace SharpTiles
 			XmlNode imageNode = tileSetNode[AttributeNames.TileSetAttributes.Image];
 			ImageSource = imageNode.Attributes[AttributeNames.TileSetAttributes.Source].Value;
 
-			if (ImageSource.StartsWith(".."))
-				ImageSource = Path.GetFileName(ImageSource);
+			//if (ImageSource.StartsWith(".."))
+			//	ImageSource = Path.GetFileName(ImageSource);
 
 			if (imageNode.Attributes[AttributeNames.TileSetAttributes.Transparency] != null)
 			{

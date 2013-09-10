@@ -9,7 +9,7 @@ namespace SharpTiles
 {
 	/// <summary>A Tile is a representation of a Tile in a .tmx file. These tiles contain textures and positions in order to render the map properly.
 	/// </summary>
-	public class Tile
+	public class Tile : IDisposable
 	{
 		public Point Position { get; internal set; }
 		public Texture Texture { get; private set; }
@@ -27,12 +27,29 @@ namespace SharpTiles
 			Texture = texture;
 			SourceTextureBounds = source;
 		}
+
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		~Tile()
+		{
+			Dispose(false);
+		}
+
+		private void Dispose(bool isDisposing)
+		{
+			if(Texture != null)
+				Texture.Dispose();
+		}
 	}
 
 	/// <summary>A TileLayer is a representation of a tile layer in a .tmx file. These layers contain Tile objects which can be accessed
 	/// in order to render the textures associated with the tiles.
 	/// </summary>
-	public class TileLayer
+	public class TileLayer : IDisposable
 	{
 		private List<Tile> tiles = new List<Tile>();
 
@@ -50,12 +67,29 @@ namespace SharpTiles
 		{
 			tiles.Add(tile);
 		}
+
+				public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		~TileLayer()
+		{
+			Dispose(false);
+		}
+
+		private void Dispose(bool isDisposing)
+		{
+			foreach (Tile tile in tiles)
+				tile.Dispose();
+		}
 	}
 
 	/// <summary>A TiledMap is a representation of a .tmx map created with the Tiled Map Editor. You can access layers and tiles within
 	/// layers by accessing the properties of this class after instantiation.
 	/// </summary>
-	public class TiledMap
+	public class TiledMap : IDisposable
 	{
 		private List<TileLayer> tileLayers = new List<TileLayer>();
 
@@ -67,9 +101,9 @@ namespace SharpTiles
 		/// </summary>
 		/// <param name="filePath">Path to the .tmx file to load</param>
 		/// <param name="renderer">Renderer object used to load tileset textures</param>
-		public TiledMap(string filePath, Renderer renderer)
+		public TiledMap(string filePath, Renderer renderer, string contentRoot = "")
 		{
-			MapContent mapContent = new MapContent(filePath, renderer);
+			MapContent mapContent = new MapContent(filePath, renderer, contentRoot);
 
 			TileWidth = mapContent.TileWidth;
 			TileHeight = mapContent.TileHeight;
@@ -147,6 +181,23 @@ namespace SharpTiles
 					}
 				}
 			}
+		}
+
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		~TiledMap()
+		{
+			Dispose(false);
+		}
+
+		private void Dispose(bool isDisposing)
+		{
+			foreach (TileLayer tileLayer in tileLayers)
+				tileLayer.Dispose();
 		}
 	}
 }
