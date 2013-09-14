@@ -26,10 +26,7 @@ namespace SharpTiles
 		public MapObjectType ObjectType { get { return objectType; } }
 		public string Name { get; private set; }
 		public string Type { get; private set; }
-		public int X { get; private set; }
-		public int Y { get; private set; }
-		public int Width { get; private set; }
-		public int Height { get; private set; }
+		public Rectangle Bounds { get; private set; }
 		public int GID { get; private set; }
 		public IEnumerable<Point> Points { get { return points; } }
 		public PropertyCollection Properties { get { return properties; } }
@@ -45,17 +42,21 @@ namespace SharpTiles
 			if (node[AttributeNames.MapObjectAttributes.Properties] != null)
 				properties = new PropertyCollection(node[AttributeNames.MapObjectAttributes.Properties]);
 
+			int x = 0, y = 0, width = 0, height = 0;
+
 			if (node.Attributes[AttributeNames.MapObjectAttributes.X] != null)
-				X = Utilities.TryToParseInt(node.Attributes[AttributeNames.MapObjectAttributes.X].Value);
+				x = Utilities.TryToParseInt(node.Attributes[AttributeNames.MapObjectAttributes.X].Value);
 
 			if (node.Attributes[AttributeNames.MapObjectAttributes.Y] != null)
-				Y = Utilities.TryToParseInt(node.Attributes[AttributeNames.MapObjectAttributes.Y].Value);
+				y = Utilities.TryToParseInt(node.Attributes[AttributeNames.MapObjectAttributes.Y].Value);
 
 			if (node.Attributes[AttributeNames.MapObjectAttributes.Width] != null)
-				Width = Utilities.TryToParseInt(node.Attributes[AttributeNames.MapObjectAttributes.Width].Value);
+				width = Utilities.TryToParseInt(node.Attributes[AttributeNames.MapObjectAttributes.Width].Value);
 
 			if (node.Attributes[AttributeNames.MapObjectAttributes.Height] != null)
-				Height = Utilities.TryToParseInt(node.Attributes[AttributeNames.MapObjectAttributes.Height].Value);
+				height = Utilities.TryToParseInt(node.Attributes[AttributeNames.MapObjectAttributes.Height].Value);
+
+			Bounds = new Rectangle(x, y, width, height);
 
 			string objectPoints = String.Empty;
 
@@ -82,11 +83,11 @@ namespace SharpTiles
 				{
 					string[] coordinates = splitPoint.Split(',');
 
-					float x, y = 0f;
-					float.TryParse(coordinates[0], NumberStyles.None, CultureInfo.InvariantCulture, out x);
-					float.TryParse(coordinates[1], NumberStyles.None, CultureInfo.InvariantCulture, out y);
+					float coordinateX = 0f, coordinateY = 0f;
+					float.TryParse(coordinates[0], NumberStyles.None, CultureInfo.InvariantCulture, out coordinateX);
+					float.TryParse(coordinates[1], NumberStyles.None, CultureInfo.InvariantCulture, out coordinateY);
 
-					points.Add(new Point(x, y));
+					points.Add(new Point((int)x, (int)y));
 				}
 			}
 		}

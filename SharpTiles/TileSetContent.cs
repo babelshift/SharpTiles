@@ -10,7 +10,7 @@ using System.Xml;
 
 namespace SharpTiles
 {
-	internal class TileSetContent : IDisposable
+	internal class TileSetContent
 	{
 		private Dictionary<int, PropertyCollection> tileProperties = new Dictionary<int, PropertyCollection>();
 
@@ -78,23 +78,6 @@ namespace SharpTiles
 		protected virtual XmlNode PrepareXmlNode(XmlNode root)
 		{
 			return root;
-		}
-
-		public void Dispose()
-		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-
-		~TileSetContent()
-		{
-			Dispose(false);
-		}
-
-		private void Dispose(bool isDisposing)
-		{
-			if(Texture != null)
-				Texture.Dispose();
 		}
 	}
 }

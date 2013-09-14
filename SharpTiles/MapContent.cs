@@ -16,7 +16,7 @@ namespace SharpTiles
 		Isometric
 	}
 
-	internal class MapContent : IDisposable
+	internal class MapContent
 	{
 		private PropertyCollection properties = new PropertyCollection();
 		private List<TileSetContent> tileSets = new List<TileSetContent>();
@@ -158,23 +158,6 @@ namespace SharpTiles
 					}
 				}
 			}
-		}
-
-		public void Dispose()
-		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-
-		~MapContent()
-		{
-			Dispose(false);
-		}
-
-		private void Dispose(bool isDisposing)
-		{
-			foreach (TileSetContent tileSet in tileSets)
-				tileSet.Dispose();
 		}
 	}
 }
