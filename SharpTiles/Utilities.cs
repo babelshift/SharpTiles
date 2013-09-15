@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SharpTiles
 {
-	public static class Utilities
+	internal static class Utilities
 	{
 		public static int TryToParseInt(string valueToParse)
 		{

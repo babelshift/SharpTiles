@@ -10,13 +10,13 @@ using System.Xml;
 
 namespace SharpTiles
 {
-	internal enum Orientation : byte
+	public enum Orientation : byte
 	{
 		Orthogonal,
 		Isometric
 	}
 
-	internal class MapContent
+	public class MapContent
 	{
 		private PropertyCollection properties = new PropertyCollection();
 		private List<TileSetContent> tileSets = new List<TileSetContent>();

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SharpTiles
 {
-	internal class TileContent
+	public class TileContent
 	{
 		private PropertyCollection properties = new PropertyCollection();
 

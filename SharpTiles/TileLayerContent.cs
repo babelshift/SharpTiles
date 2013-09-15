@@ -10,7 +10,7 @@ using System.Xml;
 
 namespace SharpTiles
 {
-	internal class TileLayerContent : LayerContent
+	public class TileLayerContent : LayerContent
 	{
 		private uint[] data;
 
