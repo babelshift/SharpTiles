@@ -108,7 +108,7 @@ namespace SharpTiles
 
 				// need to use colorkey
 
-				Surface surface = new Surface(path, Surface.SurfaceType.PNG);
+				Surface surface = new Surface(path, SurfaceType.PNG);
 				tileSet.Texture = new Texture(renderer, surface);
 			}
 		}
@@ -129,15 +129,25 @@ namespace SharpTiles
 				int tileCountX = 0;
 				while (tileCountX * tileSet.TileWidth < imageWidth)
 				{
-					tileCountX++;
-					imageWidth -= tileSet.Spacing;
+					if ((tileCountX + 1) * tileSet.TileWidth < imageWidth)
+					{
+						tileCountX++;
+						imageWidth -= tileSet.Spacing;
+					}
+					else
+						break;
 				}
 
 				int tileCountY = 0;
 				while (tileCountY * tileSet.TileHeight < imageHeight)
 				{
-					tileCountY++;
-					imageHeight -= tileSet.Spacing;
+					if ((tileCountY + 1) * tileSet.TileHeight < imageHeight)
+					{
+						tileCountY++;
+						imageHeight -= tileSet.Spacing;
+					}
+					else
+						break;
 				}
 
 				for (int y = 0; y < tileCountY; y++)
