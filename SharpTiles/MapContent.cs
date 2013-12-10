@@ -58,7 +58,7 @@ namespace SharpTiles
 
 			BuildTileSetTextures(renderer, contentRoot);
 
-			GenerateTileSourceRectangles(contentRoot);
+			GenerateTileSourceRectangles();
 		}
 
 		private void BuildTileSets(XmlDocument document)
@@ -113,13 +113,11 @@ namespace SharpTiles
 			}
 		}
 
-		private void GenerateTileSourceRectangles(string contentRoot)
+		private void GenerateTileSourceRectangles()
 		{
 			// process the tilesets, calculate tiles to fit in each set, calculate source rectangles
 			foreach (TileSetContent tileSet in tileSets)
 			{
-				string path = Path.Combine(contentRoot, tileSet.ImageSource);
-
 				int imageWidth = tileSet.Texture.Width;
 				int imageHeight = tileSet.Texture.Height;
 
