@@ -125,27 +125,17 @@ namespace SharpTiles
 				imageHeight -= tileSet.Margin * 2;
 
 				int tileCountX = 0;
-				while (tileCountX * tileSet.TileWidth < imageWidth)
+				while ((tileCountX + 1) * tileSet.TileWidth <= imageWidth)
 				{
-					if ((tileCountX + 1) * tileSet.TileWidth < imageWidth)
-					{
-						tileCountX++;
-						imageWidth -= tileSet.Spacing;
-					}
-					else
-						break;
+					tileCountX++;
+					imageWidth -= tileSet.Spacing;
 				}
 
 				int tileCountY = 0;
-				while (tileCountY * tileSet.TileHeight < imageHeight)
+				while ((tileCountY + 1) * tileSet.TileHeight <= imageHeight)
 				{
-					if ((tileCountY + 1) * tileSet.TileHeight < imageHeight)
-					{
-						tileCountY++;
-						imageHeight -= tileSet.Spacing;
-					}
-					else
-						break;
+					tileCountY++;
+					imageHeight -= tileSet.Spacing;
 				}
 
 				for (int y = 0; y < tileCountY; y++)
