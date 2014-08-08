@@ -73,6 +73,7 @@
     <None Include="App.config" />
     <Content Include="Content\TileMap_Example1.tmx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
   <ItemGroup>
