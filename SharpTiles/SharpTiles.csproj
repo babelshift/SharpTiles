@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="SharpDL">
+      <HintPath>..\Libs\SharpDL.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -51,11 +54,16 @@
     <Compile Include="ExternalTileSetContent.cs" />
     <Compile Include="LayerContent.cs" />
     <Compile Include="MapContent.cs" />
+    <Compile Include="MapObject.cs" />
+    <Compile Include="MapObjectLayer.cs" />
     <Compile Include="ObjectContent.cs" />
     <Compile Include="ObjectLayerContent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyCollection.cs" />
+    <Compile Include="Tile.cs" />
     <Compile Include="TileContent.cs" />
+    <Compile Include="TiledMap.cs" />
+    <Compile Include="TileLayer.cs" />
     <Compile Include="TileLayerContent.cs" />
     <Compile Include="TileSetContent.cs" />
     <Compile Include="Utilities.cs" />

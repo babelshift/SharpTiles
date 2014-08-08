@@ -1,83 +1,108 @@
 ﻿using SharpDL.Graphics;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace SharpTiles
 {
-	public class TileSetContent
-	{
-		private Dictionary<int, PropertyCollection> tileProperties = new Dictionary<int, PropertyCollection>();
+    internal class TileSetContent
+    {
+        private Dictionary<int, PropertyCollection> tileProperties = new Dictionary<int, PropertyCollection>();
 
-		public int FirstGID { get; private set; }
-		public string Name { get; private set; }
-		public int TileWidth { get; private set; }
-		public int TileHeight { get; private set; }
-		public string ImageSource { get; private set; }
-		public int Spacing { get; private set; }
-		public int Margin { get; private set; }
-		public Color? ColorKey { get; private set; }
-		public Texture Texture { get; set; }
-		public IList<TileContent> Tiles { get; private set; }
-		public IReadOnlyDictionary<int, PropertyCollection> TileProperties { get { return tileProperties; } }
+        public int FirstGID { get; private set; }
 
-		public TileSetContent(XmlNode tileSetNode)
-		{
-			Tiles = new List<TileContent>();
+        public string Name { get; private set; }
 
-			FirstGID = Utilities.TryToParseInt(tileSetNode.Attributes[AttributeNames.TileSetAttributes.FirstGID].Value);
+        public int TileWidth { get; private set; }
 
-			XmlNode preparedNode = PrepareXmlNode(tileSetNode);
-			Initialize(tileSetNode);
-		}
+        public int TileHeight { get; private set; }
 
-		private void Initialize(XmlNode tileSetNode)
-		{
-			Name = tileSetNode.Attributes[AttributeNames.TileSetAttributes.Name].Value;
+        public string ImageSource { get; private set; }
 
-			TileWidth = Utilities.TryToParseInt(tileSetNode.Attributes[AttributeNames.TileSetAttributes.TileWidth].Value);
-			TileHeight = Utilities.TryToParseInt(tileSetNode.Attributes[AttributeNames.TileSetAttributes.TileHeight].Value);
+        public int Spacing { get; private set; }
 
-			if (tileSetNode.Attributes[AttributeNames.TileSetAttributes.Spacing] != null)
-				Spacing = Utilities.TryToParseInt(tileSetNode.Attributes[AttributeNames.TileSetAttributes.Spacing].Value);
+        public int Margin { get; private set; }
 
-			if (tileSetNode.Attributes[AttributeNames.TileSetAttributes.Margin] != null)
-				Margin = Utilities.TryToParseInt(tileSetNode.Attributes[AttributeNames.TileSetAttributes.Margin].Value);
+        public Color? ColorKey { get; private set; }
 
-			XmlNode imageNode = tileSetNode[AttributeNames.TileSetAttributes.Image];
-			ImageSource = imageNode.Attributes[AttributeNames.TileSetAttributes.Source].Value;
+        public Texture Texture { get; set; }
 
-			//if (ImageSource.StartsWith(".."))
-			//	ImageSource = Path.GetFileName(ImageSource);
+        public IList<TileContent> Tiles { get; private set; }
 
-			if (imageNode.Attributes[AttributeNames.TileSetAttributes.Transparency] != null)
-			{
-				string colorCode = imageNode.Attributes[AttributeNames.TileSetAttributes.Transparency].Value;
-				ColorKey = new Color(colorCode);
-			}
+        public IReadOnlyDictionary<int, PropertyCollection> TileProperties { get { return tileProperties; } }
 
-			foreach(XmlNode tile in tileSetNode.SelectNodes(AttributeNames.TileSetAttributes.Tile))
-			{
-				int id = Utilities.TryToParseInt(tile.Attributes[AttributeNames.TileSetAttributes.ID].Value);
-				int tileId = FirstGID + id;
+        public TileSetContent(XmlNode tileSetNode)
+        {
+            Utilities.ThrowExceptionIfIsNull(tileSetNode, "tileSetNode");
 
-				PropertyCollection properties = new PropertyCollection();
+            Tiles = new List<TileContent>();
 
-				if (tile[AttributeNames.TileSetAttributes.Properties] != null)
-					properties = new PropertyCollection(tile[AttributeNames.TileSetAttributes.Properties]);
+            FirstGID = Utilities.TryToParseInt(tileSetNode.Attributes[AttributeNames.TileSetAttributes.FirstGID].Value);
 
-				tileProperties.Add(id, properties);
-			}
-		}
+            XmlNode preparedNode = PrepareXmlNode(tileSetNode);
+            Initialize(tileSetNode);
+        }
 
-		protected virtual XmlNode PrepareXmlNode(XmlNode root)
-		{
-			return root;
-		}
-	}
+        private void Initialize(XmlNode tileSetNode)
+        {
+            Utilities.ThrowExceptionIfIsNull(tileSetNode, "tileSetNode");
+            Utilities.ThrowExceptionIfAttributeIsNull(tileSetNode, "TileSetNode", AttributeNames.TileSetAttributes.Name);
+            Utilities.ThrowExceptionIfAttributeIsNull(tileSetNode, "TileSetNode", AttributeNames.TileSetAttributes.TileWidth);
+            Utilities.ThrowExceptionIfAttributeIsNull(tileSetNode, "TileSetNode", AttributeNames.TileSetAttributes.TileHeight);
+            Utilities.ThrowExceptionIfChildNodeIsNull(tileSetNode, "ImageNode", AttributeNames.TileSetAttributes.Image);
+
+            Name = tileSetNode.Attributes[AttributeNames.TileSetAttributes.Name].Value;
+
+            TileWidth = Utilities.TryToParseInt(tileSetNode.Attributes[AttributeNames.TileSetAttributes.TileWidth].Value);
+            
+            TileHeight = Utilities.TryToParseInt(tileSetNode.Attributes[AttributeNames.TileSetAttributes.TileHeight].Value);
+
+            // spacing is optional
+            if (tileSetNode.Attributes[AttributeNames.TileSetAttributes.Spacing] != null)
+            {
+                Spacing = Utilities.TryToParseInt(tileSetNode.Attributes[AttributeNames.TileSetAttributes.Spacing].Value);
+            }
+
+            // margin is optional
+            if (tileSetNode.Attributes[AttributeNames.TileSetAttributes.Margin] != null)
+            {
+                Margin = Utilities.TryToParseInt(tileSetNode.Attributes[AttributeNames.TileSetAttributes.Margin].Value);
+            }
+
+            XmlNode imageNode = tileSetNode[AttributeNames.TileSetAttributes.Image];
+
+            Utilities.ThrowExceptionIfAttributeIsNull(imageNode, "ImageNode", AttributeNames.TileSetAttributes.Source);
+
+            ImageSource = imageNode.Attributes[AttributeNames.TileSetAttributes.Source].Value;
+
+            // transparency is optional
+            if (imageNode.Attributes[AttributeNames.TileSetAttributes.Transparency] != null)
+            {
+                string colorCode = imageNode.Attributes[AttributeNames.TileSetAttributes.Transparency].Value;
+                ColorKey = new Color(colorCode);
+            }
+
+            foreach (XmlNode tile in tileSetNode.SelectNodes(AttributeNames.TileSetAttributes.Tile))
+            {
+                int id = Utilities.TryToParseInt(tile.Attributes[AttributeNames.TileSetAttributes.ID].Value);
+                int tileId = FirstGID + id;
+
+                PropertyCollection properties = new PropertyCollection();
+
+                if (tile[AttributeNames.TileSetAttributes.Properties] != null)
+                {
+                    properties = new PropertyCollection(tile[AttributeNames.TileSetAttributes.Properties]);
+                }
+
+                tileProperties.Add(id, properties);
+            }
+        }
+
+        protected virtual XmlNode PrepareXmlNode(XmlNode root)
+        {
+            Utilities.ThrowExceptionIfIsNull(root, "root");
+
+            return root;
+        }
+    }
 }

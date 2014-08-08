@@ -1,12 +1,8 @@
 ﻿using SharpDL;
 using SharpDL.Graphics;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace SharpTiles_Example1.Content
+namespace SharpTiles
 {
     /// <summary>
     /// Represents a single tile from a .tmx file in Tiled Map Editor. A tile can contain a texture and properties.
@@ -16,10 +12,12 @@ namespace SharpTiles_Example1.Content
         // Tiled Editor assigns the id of '0' to tiles with no textures
         public const int EmptyTileID = 0;
 
+        private int index;
+
         /// <summary>
-        /// Unique auto-generated GUID to identify a tile (not assigned by Tiled Editor)
+        /// Returns the index in the tile layer collection
         /// </summary>
-        public Guid ID { get; private set; }
+        public int Index { get { return index; } }
 
         /// <summary>
         /// Width of the tile in pixels
@@ -34,7 +32,7 @@ namespace SharpTiles_Example1.Content
         /// <summary>
         /// The position on the [x,y] coordinate tile map where this tile is located.
         /// </summary>
-        public Point GridPosition { get; set; }
+        public Point GridPosition { get; private set; }
 
         /// <summary>
         /// Texture from which to select a rectangle source texture (similar to selecting from a sprite sheet)
@@ -56,7 +54,7 @@ namespace SharpTiles_Example1.Content
         /// </summary>
         public Tile()
         {
-            ID = Guid.NewGuid();
+            index = -1;
             IsEmpty = true;
         }
 
@@ -69,7 +67,7 @@ namespace SharpTiles_Example1.Content
         /// <param name="height"></param>
         public Tile(Texture texture, Rectangle source, int width, int height)
         {
-            ID = Guid.NewGuid();
+            index = -1;
             IsEmpty = false;
             Texture = texture;
             SourceTextureBounds = source;
@@ -78,11 +76,26 @@ namespace SharpTiles_Example1.Content
         }
 
         /// <summary>
-        /// Draws the tile to the passed renderer if the tile is not empty. The draw will occur at the center of the tile's texture.
+        /// Sets the grid position index of the tile within the map. This is based on the number of tiles already in the map and the width of its parent tile layer.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="tileLayerWidth"></param>
+        public void SetIndex(int index, int tileLayerWidth)
+        {
+            this.index = index;
+            if (index > -1)
+            {
+                GridPosition = new Point(index % tileLayerWidth, index / tileLayerWidth); // TODO: need to update this based on orientation?
+            }
+        }
+
+        /// <summary>
+        /// Draws the tile to the passed renderer if the tile is not empty. The draw will occur at the center of the tile's texture. By default,
+        /// this method will only render in an orthogonal projection. If isometric is required, inherit and override this method with proper behaviors.
         /// </summary>
         /// <param name="gameTime"></param>
         /// <param name="renderer"></param>
-        public void Draw(GameTime gameTime, Renderer renderer)
+        public virtual void Draw(GameTime gameTime, Renderer renderer)
         {
             if (IsEmpty) return;
 
@@ -92,7 +105,10 @@ namespace SharpTiles_Example1.Content
                 SourceTextureBounds);
         }
 
-        public void Dispose()
+        /// <summary>
+        /// If you override this method, you *must* call the base Dispose method in order to remove any resources allocated in the base class.
+        /// </summary>
+        public virtual void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);

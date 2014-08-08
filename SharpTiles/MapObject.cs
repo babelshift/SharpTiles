@@ -1,12 +1,7 @@
 ﻿using SharpDL.Graphics;
-using SharpTiles;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace SharpTiles_Example1.Content
+namespace SharpTiles
 {
     /// <summary>
     /// Represents a single object from a .tmx file. An object is a bounded entity which can
@@ -14,6 +9,8 @@ namespace SharpTiles_Example1.Content
     /// </summary>
     public class MapObject
     {
+        public Guid ID { get; private set; }
+
         /// <summary>
         /// The name given to the object by the author of the map
         /// </summary>
@@ -47,6 +44,7 @@ namespace SharpTiles_Example1.Content
             Bounds = bounds;
             Orientation = orientation;
             Properties = properties;
+            ID = Guid.NewGuid();
         }
     }
 }

@@ -1,161 +1,199 @@
 ﻿using SharpDL.Graphics;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace SharpTiles
 {
-	public enum Orientation : byte
-	{
-		Orthogonal,
-		Isometric
-	}
+    public enum Orientation : byte
+    {
+        Orthogonal,
+        Isometric
+    }
 
-	public class MapContent
-	{
-		private PropertyCollection properties = new PropertyCollection();
-		private List<TileSetContent> tileSets = new List<TileSetContent>();
-		private List<LayerContent> layers = new List<LayerContent>();
+    internal class MapContent
+    {
+        private PropertyCollection properties = new PropertyCollection();
+        private List<TileSetContent> tileSets = new List<TileSetContent>();
+        private List<LayerContent> layers = new List<LayerContent>();
 
-		public string FileName { get; private set; }
-		public string FileDirectory { get; private set; }
-		public string Version { get; private set; }
-		public Orientation Orientation { get; private set; }
-		public int Width { get; private set; }
-		public int Height { get; private set; }
-		public int TileWidth { get; private set; }
-		public int TileHeight { get; private set; }
-		public PropertyCollection Properties { get { return properties; } }
-		public IEnumerable<TileSetContent> TileSets { get { return tileSets; } }
-		public IEnumerable<LayerContent> Layers { get { return layers; } }
+        public string FileName { get; private set; }
 
-		public MapContent(string filePath, Renderer renderer, string contentRoot)
-		{
-			XmlDocument document = new XmlDocument();
-			document.Load(filePath);
+        public string FileDirectory { get; private set; }
 
-			XmlNode mapNode = document[AttributeNames.MapAttributes.Map];
+        public string Version { get; private set; }
 
-			Version = mapNode.Attributes[AttributeNames.MapAttributes.Version].Value;
-			Orientation = (Orientation)Enum.Parse(typeof(Orientation), mapNode.Attributes[AttributeNames.MapAttributes.Orientation].Value, true);
-			Width = Utilities.TryToParseInt(mapNode.Attributes[AttributeNames.MapAttributes.Width].Value);
-			Height = Utilities.TryToParseInt(mapNode.Attributes[AttributeNames.MapAttributes.Height].Value);
-			TileWidth = Utilities.TryToParseInt(mapNode.Attributes[AttributeNames.MapAttributes.TileWidth].Value);
-			TileHeight = Utilities.TryToParseInt(mapNode.Attributes[AttributeNames.MapAttributes.TileHeight].Value);
+        public Orientation Orientation { get; private set; }
 
-			XmlNode propertiesNode = document.SelectSingleNode(AttributeNames.MapAttributes.MapProperties);
-			if (propertiesNode != null)
-				properties = new PropertyCollection(propertiesNode);
+        public int Width { get; private set; }
 
-			BuildTileSets(document);
+        public int Height { get; private set; }
 
-			BuildLayers(document);
+        public int TileWidth { get; private set; }
 
-			BuildTileSetTextures(renderer, contentRoot);
+        public int TileHeight { get; private set; }
 
-			GenerateTileSourceRectangles();
-		}
+        public PropertyCollection Properties { get { return properties; } }
 
-		private void BuildTileSets(XmlDocument document)
-		{
-			foreach (XmlNode tileSetNode in document.SelectNodes(AttributeNames.MapAttributes.MapTileSet))
-			{
-				if (tileSetNode.Attributes[AttributeNames.MapAttributes.Source] != null)
-					tileSets.Add(new ExternalTileSetContent(tileSetNode));
-				else
-					tileSets.Add(new TileSetContent(tileSetNode));
-			}
-		}
+        public IReadOnlyCollection<TileSetContent> TileSets { get { return tileSets.AsReadOnly(); } }
 
-		private void BuildLayers(XmlDocument document)
-		{
-			foreach (XmlNode layerNode in document.SelectNodes(AttributeNames.MapAttributes.MapTileLayer + "|" + AttributeNames.MapAttributes.MapObjectLayer))
-			{
-				LayerContent layer;
-				if (layerNode.Name == AttributeNames.MapAttributes.TileLayer)
-					layer = new TileLayerContent(layerNode);
-				else if (layerNode.Name == AttributeNames.MapAttributes.ObjectLayer)
-					layer = new ObjectLayerContent(layerNode);
-				else
-					throw new Exception(String.Format("Unknown layer: {0}", layerNode.Name));
+        public IReadOnlyCollection<LayerContent> Layers { get { return layers.AsReadOnly(); } }
 
-				string layerName = layer.Name;
-				int duplicateCount = 2;
+        public MapContent(string filePath, Renderer renderer, string contentRoot)
+        {
+            Utilities.ThrowExceptionIfIsNullOrEmpty(filePath, "filePath");
+            Debug.Assert(renderer != null, "Renderer cannot be null when loading a tiled map.");
 
-				while (layers.Any(l => l.Name == layerName))
-				{
-					layerName = String.Format("{0}{1}", layer.Name, duplicateCount);
-					duplicateCount++;
-				}
+            XmlDocument document = new XmlDocument();
+            document.Load(filePath);
 
-				layer.Name = layerName;
+            XmlNode mapNode = document[AttributeNames.MapAttributes.Map];
 
-				layers.Add(layer);
-			}
-		}
+            Utilities.ThrowExceptionIfIsNull(mapNode, "mapNode");
+            Utilities.ThrowExceptionIfAttributeIsNull(mapNode, "mapNode", AttributeNames.MapAttributes.Version);
+            Utilities.ThrowExceptionIfAttributeIsNull(mapNode, "mapNode", AttributeNames.MapAttributes.Orientation);
+            Utilities.ThrowExceptionIfAttributeIsNull(mapNode, "mapNode", AttributeNames.MapAttributes.Width);
+            Utilities.ThrowExceptionIfAttributeIsNull(mapNode, "mapNode", AttributeNames.MapAttributes.Height);
+            Utilities.ThrowExceptionIfAttributeIsNull(mapNode, "mapNode", AttributeNames.MapAttributes.TileWidth);
+            Utilities.ThrowExceptionIfAttributeIsNull(mapNode, "mapNode", AttributeNames.MapAttributes.TileHeight);
 
-		private void BuildTileSetTextures(Renderer renderer, string contentRoot)
-		{
-			// build textures
-			foreach (TileSetContent tileSet in tileSets)
-			{
-				string path = Path.Combine(contentRoot, tileSet.ImageSource);
+            Version = mapNode.Attributes[AttributeNames.MapAttributes.Version].Value;
+            Orientation = (Orientation)Enum.Parse(typeof(Orientation), mapNode.Attributes[AttributeNames.MapAttributes.Orientation].Value, true);
+            Width = Utilities.TryToParseInt(mapNode.Attributes[AttributeNames.MapAttributes.Width].Value);
+            Height = Utilities.TryToParseInt(mapNode.Attributes[AttributeNames.MapAttributes.Height].Value);
+            TileWidth = Utilities.TryToParseInt(mapNode.Attributes[AttributeNames.MapAttributes.TileWidth].Value);
+            TileHeight = Utilities.TryToParseInt(mapNode.Attributes[AttributeNames.MapAttributes.TileHeight].Value);
 
-				// need to use colorkey
+            // properties are optional
+            XmlNode propertiesNode = document.SelectSingleNode(AttributeNames.MapAttributes.MapProperties);
+            if (propertiesNode != null)
+            {
+                properties = new PropertyCollection(propertiesNode);
+            }
 
-				Surface surface = new Surface(path, SurfaceType.PNG);
-				tileSet.Texture = new Texture(renderer, surface);
-			}
-		}
+            BuildTileSets(document);
 
-		private void GenerateTileSourceRectangles()
-		{
-			// process the tilesets, calculate tiles to fit in each set, calculate source rectangles
-			foreach (TileSetContent tileSet in tileSets)
-			{
-				int imageWidth = tileSet.Texture.Width;
-				int imageHeight = tileSet.Texture.Height;
+            BuildLayers(document);
 
-				imageWidth -= tileSet.Margin * 2;
-				imageHeight -= tileSet.Margin * 2;
+            BuildTileSetTextures(renderer, contentRoot);
 
-				int tileCountX = 0;
-				while ((tileCountX + 1) * tileSet.TileWidth <= imageWidth)
-				{
-					tileCountX++;
-					imageWidth -= tileSet.Spacing;
-				}
+            GenerateTileSourceRectangles();
+        }
 
-				int tileCountY = 0;
-				while ((tileCountY + 1) * tileSet.TileHeight <= imageHeight)
-				{
-					tileCountY++;
-					imageHeight -= tileSet.Spacing;
-				}
+        private void BuildTileSets(XmlDocument document)
+        {
+            foreach (XmlNode tileSetNode in document.SelectNodes(AttributeNames.MapAttributes.MapTileSet))
+            {
+                if (!Utilities.IsNull(tileSetNode.Attributes[AttributeNames.MapAttributes.Source]))
+                {
+                    tileSets.Add(new ExternalTileSetContent(tileSetNode));
+                }
+                else
+                {
+                    tileSets.Add(new TileSetContent(tileSetNode));
+                }
+            }
+        }
 
-				for (int y = 0; y < tileCountY; y++)
-				{
-					for (int x = 0; x < tileCountX; x++)
-					{
-						int rx = tileSet.Margin + x * (tileSet.TileWidth + tileSet.Spacing);
-						int ry = tileSet.Margin + y * (tileSet.TileHeight + tileSet.Spacing);
-						Rectangle source = new Rectangle(rx, ry, tileSet.TileWidth, tileSet.TileHeight);
+        private void BuildLayers(XmlDocument document)
+        {
+            foreach (XmlNode layerNode in document.SelectNodes(AttributeNames.MapAttributes.MapTileLayer + "|" + AttributeNames.MapAttributes.MapObjectLayer))
+            {
+                LayerContent layer;
+                if (layerNode.Name == AttributeNames.MapAttributes.TileLayer)
+                {
+                    layer = new TileLayerContent(layerNode);
+                }
+                else if (layerNode.Name == AttributeNames.MapAttributes.ObjectLayer)
+                {
+                    layer = new ObjectLayerContent(layerNode);
+                }
+                else
+                {
+                    throw new Exception(String.Format("Unknown layer: {0}. Must be tile or object layer.", layerNode.Name));
+                }
 
-						int index = tileSet.FirstGID + (y * tileCountX + x);
-						PropertyCollection tileProperties = new PropertyCollection();
-						if (tileSet.TileProperties.ContainsKey(index))
-							tileProperties = tileSet.TileProperties[index];
+                Utilities.ThrowExceptionIfIsNullOrEmpty(layer.Name, "layerName");
 
-						TileContent tile = new TileContent(source, tileProperties);
-						tileSet.Tiles.Add(tile);
-					}
-				}
-			}
-		}
-	}
+                string layerName = layer.Name;
+                int duplicateCount = 2;
+
+                // this handles renaming duplicates, how can we make this faster without O(n) searching through a list?
+                // store these in hash tables and perform existence check prior to adding?
+                while (layers.Any(l => l.Name == layerName))
+                {
+                    layerName = String.Format("{0}{1}", layer.Name, duplicateCount);
+                    duplicateCount++;
+                }
+
+                layer.Name = layerName;
+
+                layers.Add(layer);
+            }
+        }
+
+        private void BuildTileSetTextures(Renderer renderer, string contentRoot)
+        {
+            // build textures
+            foreach (TileSetContent tileSet in tileSets)
+            {
+                string path = Path.Combine(contentRoot, tileSet.ImageSource);
+
+                // need to use colorkey
+                // need to support more than PNG
+                Surface surface = new Surface(path, SurfaceType.PNG);
+                tileSet.Texture = new Texture(renderer, surface);
+            }
+        }
+
+        private void GenerateTileSourceRectangles()
+        {
+            // process the tilesets, calculate tiles to fit in each set, calculate source rectangles
+            foreach (TileSetContent tileSet in tileSets)
+            {
+                int imageWidth = tileSet.Texture.Width;
+                int imageHeight = tileSet.Texture.Height;
+
+                imageWidth -= tileSet.Margin * 2;
+                imageHeight -= tileSet.Margin * 2;
+
+                int tileCountX = 0;
+                while ((tileCountX + 1) * tileSet.TileWidth <= imageWidth)
+                {
+                    tileCountX++;
+                    imageWidth -= tileSet.Spacing;
+                }
+
+                int tileCountY = 0;
+                while ((tileCountY + 1) * tileSet.TileHeight <= imageHeight)
+                {
+                    tileCountY++;
+                    imageHeight -= tileSet.Spacing;
+                }
+
+                for (int y = 0; y < tileCountY; y++)
+                {
+                    for (int x = 0; x < tileCountX; x++)
+                    {
+                        int rx = tileSet.Margin + x * (tileSet.TileWidth + tileSet.Spacing);
+                        int ry = tileSet.Margin + y * (tileSet.TileHeight + tileSet.Spacing);
+                        Rectangle source = new Rectangle(rx, ry, tileSet.TileWidth, tileSet.TileHeight);
+
+                        int index = tileSet.FirstGID + (y * tileCountX + x);
+                        PropertyCollection tileProperties = new PropertyCollection();
+                        if (tileSet.TileProperties.ContainsKey(index))
+                        {
+                            tileProperties = tileSet.TileProperties[index];
+                        }
+
+                        TileContent tile = new TileContent(source, tileProperties);
+                        tileSet.Tiles.Add(tile);
+                    }
+                }
+            }
+        }
+    }
 }

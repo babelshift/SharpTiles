@@ -3,9 +3,6 @@ using SharpDL.Graphics;
 using SharpTiles;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SharpTiles_Example1.Content
 {
@@ -76,7 +73,6 @@ namespace SharpTiles_Example1.Content
             VerticalTileCount = mapContent.Height;
 
             CreateLayers(mapContent);
-            CalculateTilePositions(mapContent.Orientation);
         }
 
         /// <summary>
@@ -165,26 +161,6 @@ namespace SharpTiles_Example1.Content
         }
 
         /// <summary>
-        /// Loop through all tiles in all tile layers and calculate their X,Y coordinates. This will be used
-        /// by renderers to paint the textures in the correct position of the rendering target.
-        /// </summary>
-        private void CalculateTilePositions(Orientation mapOrientation)
-        {
-            foreach (TileLayer tileLayer in tileLayers)
-            {
-                for (int y = 0; y < tileLayer.Height; y++)
-                {
-                    for (int x = 0; x < tileLayer.Width; x++)
-                    {
-                        Tile tile = tileLayer.Tiles[y * tileLayer.Width + x];
-
-                        tile.GridPosition = new Point(x, y);
-                    }
-                }
-            }
-        }
-
-        /// <summary>
         /// Creates the proper map object layer based on the layer name such as collidables and path nodes.
         /// </summary>
         /// <param name="layer"></param>
@@ -238,6 +214,5 @@ namespace SharpTiles_Example1.Content
             foreach (TileLayer tileLayer in tileLayers)
                 tileLayer.Dispose();
         }
-
     }
 }
