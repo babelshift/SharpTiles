@@ -14,7 +14,7 @@ namespace SharpTiles
         Isometric
     }
 
-    internal class MapContent
+    public class MapContent
     {
         private PropertyCollection properties = new PropertyCollection();
         private List<TileSetContent> tileSets = new List<TileSetContent>();

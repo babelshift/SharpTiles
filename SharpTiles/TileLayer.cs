@@ -32,7 +32,7 @@ namespace SharpTiles
         /// <summary>
         /// A read only indexable list of the tiles contained within the layer
         /// </summary>
-        internal IReadOnlyDictionary<int, Tile> InternalTiles { get { return new ReadOnlyDictionary<int, Tile>(tiles); } }
+        public IReadOnlyDictionary<int, Tile> InternalTiles { get { return new ReadOnlyDictionary<int, Tile>(tiles); } }
 
         /// <summary>
         /// Default constructor requires a name, the width, and the height of the layer from the .tmx file.

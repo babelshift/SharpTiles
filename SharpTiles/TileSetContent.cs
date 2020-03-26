@@ -5,7 +5,7 @@ using System.Xml;
 
 namespace SharpTiles
 {
-    internal class TileSetContent
+    public class TileSetContent
     {
         private Dictionary<int, PropertyCollection> tileProperties = new Dictionary<int, PropertyCollection>();
 

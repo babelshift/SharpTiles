@@ -1,6 +1,6 @@
 ﻿namespace SharpTiles
 {
-    internal static class AttributeNames
+    public static class AttributeNames
     {
         public static class LayerAttributes
         {

@@ -4,7 +4,7 @@ using System.Xml;
 
 namespace SharpTiles
 {
-    internal static class Utilities
+    public static class Utilities
     {
         public static int TryToParseInt(string valueToParse)
         {

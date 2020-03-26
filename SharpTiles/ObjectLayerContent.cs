@@ -7,7 +7,7 @@ using System.Xml;
 
 namespace SharpTiles
 {
-    internal class ObjectLayerContent : LayerContent
+    public class ObjectLayerContent : LayerContent
     {
         private List<ObjectContent> mapObjects = new List<ObjectContent>();
 

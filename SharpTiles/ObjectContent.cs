@@ -14,7 +14,7 @@ namespace SharpTiles
         Polyline
     }
 
-    internal class ObjectContent
+    public class ObjectContent
     {
         private PropertyCollection properties = new PropertyCollection();
         private List<Point> points = new List<Point>();
