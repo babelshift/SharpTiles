@@ -9,7 +9,7 @@ namespace SharpTiles_Example1.Content
     /// <summary>
     /// Represents a single .tmx file from Tiled Map Editor. Tiled maps contain tile layers (which contain tiles) and object layers (which contain objects).
     /// </summary>
-    public class TiledMap : IDisposable
+    internal class TiledMap : IDisposable
     {
         private List<TileLayer> tileLayers = new List<TileLayer>();
         private List<MapObjectLayer> mapObjectLayers = new List<MapObjectLayer>();

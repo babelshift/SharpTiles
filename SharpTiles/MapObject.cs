@@ -7,7 +7,7 @@ namespace SharpTiles
     /// Represents a single object from a .tmx file. An object is a bounded entity which can
     /// define extra behaviors to regions of the map such as spawn points, collision boundaries, and more.
     /// </summary>
-    public class MapObject
+    internal class MapObject
     {
         public Guid ID { get; private set; }
 

@@ -8,7 +8,7 @@ namespace SharpTiles
     /// <summary>
     /// Represents a single tile layer from a .tmx file. A tile layer contains 0 to many tiles.
     /// </summary>
-    public class TileLayer : IDisposable
+    internal class TileLayer : IDisposable
     {
         private Dictionary<int, Tile> tiles = new Dictionary<int, Tile>();
 

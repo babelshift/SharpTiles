@@ -8,7 +8,7 @@ namespace SharpTiles_Example1.Content
     /// <summary>
     /// Represents a single object layer from a .tmx file. An object layer contains 0 to many objects.
     /// </summary>
-    public class MapObjectLayer
+    internal class MapObjectLayer
     {
         private Dictionary<Guid, MapObject> mapObjects = new Dictionary<Guid, MapObject>();
 

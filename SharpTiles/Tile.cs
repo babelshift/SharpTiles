@@ -7,7 +7,7 @@ namespace SharpTiles
     /// <summary>
     /// Represents a single tile from a .tmx file in Tiled Map Editor. A tile can contain a texture and properties.
     /// </summary>
-    public class Tile : IDisposable
+    internal class Tile : IDisposable
     {
         // Tiled Editor assigns the id of '0' to tiles with no textures
         public const int EmptyTileID = 0;
