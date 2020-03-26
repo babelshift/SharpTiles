@@ -1,6 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <Description>SharpTiles is a C# library used to load Tiled Map Editor's in a format used to render via SDL2.</Description>
+    <VersionPrefix>1.0.0</VersionPrefix>
+    <Authors>Justin Skiles</Authors>
+    <AssemblyName>SharpTiles</AssemblyName>
+    <PackageId>SharpTiles</PackageId>
+    <PackageProjectUrl>https://github.com/babelshift/SharpTiles</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
