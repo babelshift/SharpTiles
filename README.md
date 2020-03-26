@@ -1,4 +1,5 @@
 [![Build Status](https://dev.azure.com/justinskiles/justinskiles/_apis/build/status/babelshift.SharpTiles?branchName=master)](https://dev.azure.com/justinskiles/justinskiles/_build/latest?definitionId=6&branchName=master)
+[![NuGet](https://img.shields.io/nuget/v/SharpTiles.svg)](https://www.nuget.org/packages/SharpTiles)
 
 # SharpTiles
 
