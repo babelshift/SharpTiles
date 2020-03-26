@@ -2,7 +2,7 @@
 
 namespace SharpTiles
 {
-    internal abstract class LayerContent
+    public abstract class LayerContent
     {
         private PropertyCollection properties = new PropertyCollection();
 

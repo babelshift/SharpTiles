@@ -3,7 +3,7 @@ using System.Xml;
 
 namespace SharpTiles
 {
-    internal class ExternalTileSetContent : TileSetContent
+    public class ExternalTileSetContent : TileSetContent
     {
         public ExternalTileSetContent(XmlNode node)
             : base(node)
