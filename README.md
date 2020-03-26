@@ -1,3 +1,5 @@
+[![Build Status](https://dev.azure.com/justinskiles/justinskiles/_apis/build/status/babelshift.SharpTiles?branchName=master)](https://dev.azure.com/justinskiles/justinskiles/_build/latest?definitionId=6&branchName=master)
+
 # SharpTiles
 
 SharpTiles is a C# library used to load Tiled Map Editor's in a format used to render via SDL2. This library is heavily based on an XNA implementation created by Nick Gravelyn who has since dropped support for the project. You can find the XNA implementation on [GitHub](https://github.com/babelshift/TiledLib).
