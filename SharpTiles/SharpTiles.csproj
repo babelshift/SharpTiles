@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <Description>SharpTiles is a C# library used to load Tiled Map Editor's in a format used to render via SDL2.</Description>
-    <VersionPrefix>1.0.4</VersionPrefix>
+    <VersionPrefix>1.0.5</VersionPrefix>
     <Authors>Justin Skiles</Authors>
     <AssemblyName>SharpTiles</AssemblyName>
     <PackageId>SharpTiles</PackageId>
