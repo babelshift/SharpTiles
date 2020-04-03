@@ -1,6 +1,6 @@
 # SharpTiles
 
-**This library has been deprecated as most of the code was moved to the [SharpDL](https://github.com/babelshift/SharpDL) library.**
+**This library has been deprecated as most of the code was moved to the [SharpDL](https://github.com/babelshift/SharpDL) library. The documentation below is still relevant, but all updates will be made on SharpDL.**
 
 SharpTiles is a C# library used to load Tiled Map Editor's in a format used to render via SDL2. This library is heavily based on an XNA implementation created by Nick Gravelyn who has since dropped support for the project. You can find the XNA implementation on [GitHub](https://github.com/babelshift/TiledLib).
 
